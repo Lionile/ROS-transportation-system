@@ -31,4 +31,5 @@
         <!-- Spawn the Gazebo ROS controllers -->
         <node name="gazebo_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="joint_state_controller" />
     </group>
+    <node pkg="tf2_ros" type="static_transform_publisher" name="map_to_base" args="0 0 0 0 0 0 map world"/>
 </launch>
