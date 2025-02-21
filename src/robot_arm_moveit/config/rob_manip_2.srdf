@@ -44,4 +44,10 @@
     <disable_collisions link1="lower_arm_2" link2="upper_arm" reason="Never"/>
     <disable_collisions link1="lower_arm_3" link2="lower_arm_4" reason="Adjacent"/>
     <disable_collisions link1="torso" link2="upper_arm" reason="Adjacent"/>
+
+    <gazebo>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+            <robotNamespace>/robot_arm</robotNamespace>  <!-- Namespace -->
+        </plugin>
+    </gazebo>
 </robot>

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name='start_mobrob' default='true'/>
+    <arg name='start_arm' default='false'/>
+
+    
+
+    <!-- Gazebo options -->
+    <arg name="gazebo_gui" default="true" doc="Start Gazebo GUI"/>
+    <include file="$(find gazebo_ros)/launch/willowgarage_world.launch" pass_all_args="true"/>
+
+
+    <!-- Mobile robot -->
+    <include file='$(find mobile_robot)/launch/spawn_robot.launch'>
+        <arg name="robot_x" value="-2"/>
+        <arg name="robot_y" value="-2"/>
+    </include>
+
+    <!-- Robot arm -->
+    <include file='$(find robot_arm_moveit)/launch/demo.launch'/>
+    <arg name="initial_joint_positions" default=" -J elbow 0 -J elbow_2 0 -J elbow_3 0 -J elbow_4 0 -J hip 0 -J shoulder 0 -J wrist 0" doc="Initial joint configuration of the robot"/>
+    <arg name="world_pose" default="-x 0 -y 0 -z 0 -R 0 -P 0 -Y 0" doc="Pose to spawn the robot arm at"/>
+    <group ns='robot_arm'>
+        <include file="$(find robot_arm_moveit)/launch/ros_controllers.launch"/>
+        
+        <!-- Spawn robot arm in Gazebo -->
+        <param name="robot_description" command="cat $(find robot_arm_moveit)/urdf/rob_manip_2.urdf" />
+        <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model robot_arm $(arg world_pose) $(arg initial_joint_positions)"
+        respawn="false" output="screen" />
+
+        <!-- Spawn the Gazebo ROS controllers -->
+        <node name="gazebo_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="joint_state_controller" />
+    </group>
+</launch>

@@ -1,0 +1,11 @@
+local_costmap:
+  global_frame: map
+  robot_base_frame: mob_rob/base_link
+  rolling_window: true
+  always_send_full_costmap: true
+  update_frequency: 5.0
+  publish_frequency: 2.0
+  plugins:
+  - {name: static_layer, type: "costmap_2d::StaticLayer"}
+  - {name: obstacle_layer, type: "costmap_2d::VoxelLayer"}
+  - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
