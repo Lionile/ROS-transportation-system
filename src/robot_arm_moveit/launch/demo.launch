@@ -63,10 +63,4 @@
     <arg name="moveit_warehouse_database_path" value="$(arg db_path)"/>
   </include>
 
-  <gazebo>
-    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <robotNamespace>robot_arm</robotNamespace>
-    </plugin>
-  </gazebo>
-
 </launch>

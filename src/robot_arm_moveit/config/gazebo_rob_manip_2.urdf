@@ -204,25 +204,85 @@
     <link name="hand">
         <visual>
             <geometry>
-                <box size="0.05 0.05 0.05" />
+                <box size="0.03 0.12 0.02" />
             </geometry>
             <material name="silver">
                 <color rgba="0.75 0.75 0.75 1" />
             </material>
-            <origin rpy="0.0 0 0" xyz="0 0 0.025" />
+            <origin rpy="0.0 0 0" xyz="0 0 0.01" />
         </visual>
         <collision>
             <geometry>
-                <box size="0.05 0.05 0.05" />
+                <box size="0.05 0.12 0.02" />
             </geometry>
-            <origin rpy="0.0 0 0" xyz="0 0 0.025" />
+            <origin rpy="0.0 0 0" xyz="0 0 0.01" />
         </collision>
         <inertial>
             <mass value="1.0" />
             <inertia ixx="0.00042" iyy="0.00042" izz="0.00042" ixy="0" ixz="0" iyz="0" />
-            <origin rpy="0.0 0 0" xyz="0 0 0.025" />
+            <origin rpy="0.0 0 0" xyz="0 0 0.01" />
         </inertial>
     </link>
+    <!-- Gripper -->
+    <link name="left_gripper">
+        <visual>
+            <geometry>
+                <box size="0.02 0.02 0.07" />
+            </geometry>
+            <material name="silver">
+                <color rgba="0.75 0.75 0.75 1" />
+            </material>
+            <origin rpy="0 0 0" xyz="0 0 0.035" />
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.02 0.02 0.07" />
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0.035" />
+        </collision>
+        <inertial>
+            <mass value="0.1" />
+            <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
+            <origin rpy="0 0 0" xyz="0 0 0.035" />
+        </inertial>
+    </link>
+    <link name="right_gripper">
+        <visual>
+            <geometry>
+                <box size="0.02 0.02 0.07" />
+            </geometry>
+            <material name="silver">
+                <color rgba="0.75 0.75 0.75 1" />
+            </material>
+            <origin rpy="0 0 0" xyz="0 0 0.035" />
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.02 0.02 0.07" />
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0.035" />
+        </collision>
+        <inertial>
+            <mass value="0.1" />
+            <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
+            <origin rpy="0 0 0" xyz="0 0 0.035" />
+        </inertial>
+    </link>
+    <!-- Gripper Joints -->
+    <joint name="gripper_joint_left" type="prismatic">
+        <axis xyz="0 -1 0" />
+        <limit lower="0.0" upper="0.04" effort="1000" velocity="0.1" />
+        <parent link="hand" />
+        <child link="left_gripper" />
+        <origin rpy="0 0 0" xyz="0 0.05 0.0175" />
+    </joint>
+    <joint name="gripper_joint_right" type="prismatic">
+        <axis xyz="0 1 0" />
+        <limit lower="0.0" upper="0.04" effort="1000" velocity="0.1" />
+        <parent link="hand" />
+        <child link="right_gripper" />
+        <origin rpy="0 0 0" xyz="0 -0.05 0.0175" />
+    </joint>
     <!-- Transmission -->
     <transmission name="tran0">
         <type>transmission_interface/SimpleTransmission</type>
@@ -231,7 +291,7 @@
         </joint>
         <actuator name="motor0">
             <mechanicalReduction>1</mechanicalReduction>
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
         </actuator>
     </transmission>
     <transmission name="tran1">
@@ -241,7 +301,7 @@
         </joint>
         <actuator name="motor1">
             <mechanicalReduction>1</mechanicalReduction>
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
         </actuator>
     </transmission>
     <transmission name="tran2">
@@ -251,7 +311,7 @@
         </joint>
         <actuator name="motor2">
             <mechanicalReduction>1</mechanicalReduction>
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
         </actuator>
     </transmission>
     <transmission name="tran3">
@@ -261,7 +321,7 @@
         </joint>
         <actuator name="motor3">
             <mechanicalReduction>1</mechanicalReduction>
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
         </actuator>
     </transmission>
     <transmission name="tran4">
@@ -271,7 +331,7 @@
         </joint>
         <actuator name="motor4">
             <mechanicalReduction>1</mechanicalReduction>
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
         </actuator>
     </transmission>
     <transmission name="tran5">
@@ -281,7 +341,7 @@
         </joint>
         <actuator name="motor5">
             <mechanicalReduction>1</mechanicalReduction>
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
         </actuator>
     </transmission>
     <transmission name="tran6">
@@ -290,6 +350,27 @@
             <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
         </joint>
         <actuator name="motor6">
+            <mechanicalReduction>1</mechanicalReduction>
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        </actuator>
+    </transmission>
+    <!-- Gripper Transmission -->
+    <transmission name="tran7">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="gripper_joint_left">
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="motor7">
+            <mechanicalReduction>1</mechanicalReduction>
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        </actuator>
+    </transmission>
+    <transmission name="tran8">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="gripper_joint_right">
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="motor8">
             <mechanicalReduction>1</mechanicalReduction>
             <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         </actuator>
@@ -320,6 +401,13 @@
         <material>Gazebo/Chrome</material>
     </gazebo>
     <gazebo reference="hand">
+        <material>Gazebo/Chrome</material>
+    </gazebo>
+    <!-- Gripper Gazebo -->
+    <gazebo reference="left_gripper">
+        <material>Gazebo/Chrome</material>
+    </gazebo>
+    <gazebo reference="right_gripper">
         <material>Gazebo/Chrome</material>
     </gazebo>
     <!-- Gazebo plugins -->

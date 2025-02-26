@@ -35,17 +35,13 @@ pub.publish(pose_array)
 
 
 # send actions until the robot completes the path
-rospy.logerr('Creating client: ' + str(rospy.resolve_name('move_base')))
 client = actionlib.SimpleActionClient(rospy.resolve_name('move_base'), MoveBaseAction)
 client.wait_for_server()
 
 
-rospy.logerr('Starting path')
 for target in target_poses:
     goal = MoveBaseGoal()
     goal.target_pose = target
 
     client.send_goal(goal)
     wait = client.wait_for_result()
-
-rospy.logerr('Finished path')

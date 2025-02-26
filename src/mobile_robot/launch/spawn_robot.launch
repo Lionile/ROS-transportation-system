@@ -70,7 +70,10 @@
             <param name='base_frame_id' value='$(arg ns)/base_link'/>
         </node>
 
-        <param name="start_path_publisher" value='true'/>
-        <node name='path_publisher' pkg='mobile_robot' type='path_publisher.py'/>
+        <!-- Publish initial robot state-->
+        <node name="initial_pose_publisher" pkg="mobile_robot" type="initial_pose_publisher.py">
+            <param name="robot_x" value="$(arg robot_x)"/>
+            <param name="robot_y" value="$(arg robot_y)"/>
+        </node>
     </group>
 </launch>

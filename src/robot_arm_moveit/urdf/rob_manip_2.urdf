@@ -233,25 +233,92 @@
     <link name="hand">
         <visual>
             <geometry>
-                <box size="0.05 0.05 0.05"/>
+                <box size="0.03 0.12 0.02"/>
             </geometry>
             <material name="silver">
                 <color rgba="0.75 0.75 0.75 1"/>
             </material>
-            <origin rpy="0.0 0 0" xyz="0 0 0.025"/>
+            <origin rpy="0.0 0 0" xyz="0 0 0.01"/>
         </visual>
         <collision>
             <geometry>
-                <box size="0.05 0.05 0.05"/>
+                <box size="0.05 0.12 0.02"/>
             </geometry>
-            <origin rpy="0.0 0 0" xyz="0 0 0.025"/>
+            <origin rpy="0.0 0 0" xyz="0 0 0.01"/>
         </collision>
         <inertial>
             <mass value="1.0"/>
             <inertia ixx="0.00042" iyy="0.00042" izz="0.00042" ixy="0" ixz="0" iyz="0"/>
-            <origin rpy="0.0 0 0" xyz="0 0 0.025"/>
+            <origin rpy="0.0 0 0" xyz="0 0 0.01"/>
         </inertial>
     </link>
+
+
+
+    <!-- Gripper -->
+    <link name="left_gripper">
+        <visual>
+            <geometry>
+                <box size="0.02 0.02 0.07"/>
+            </geometry>
+            <material name="silver">
+                <color rgba="0.75 0.75 0.75 1"/>
+            </material>
+            <origin rpy="0 0 0" xyz="0 0 0.035"/>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.02 0.02 0.07"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0.035"/>
+        </collision>
+        <inertial>
+            <mass value="0.1"/>
+            <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001"/>
+            <origin rpy="0 0 0" xyz="0 0 0.035"/>
+        </inertial>
+    </link>
+
+    <link name="right_gripper">
+        <visual>
+            <geometry>
+                <box size="0.02 0.02 0.07"/>
+            </geometry>
+            <material name="silver">
+                <color rgba="0.75 0.75 0.75 1"/>
+            </material>
+            <origin rpy="0 0 0" xyz="0 0 0.035"/>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.02 0.02 0.07"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0.035"/>
+        </collision>
+        <inertial>
+            <mass value="0.1"/>
+            <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001"/>
+            <origin rpy="0 0 0" xyz="0 0 0.035"/>
+        </inertial>
+    </link>
+
+
+    <!-- Gripper Joints -->
+    <joint name="gripper_joint_left" type="prismatic">
+        <axis xyz="0 -1 0"/>
+        <limit lower="0.0" upper="0.04" effort="1000" velocity="0.1"/>
+        <parent link="hand"/>
+        <child link="left_gripper"/>
+        <origin rpy="0 0 0" xyz="0 0.05 0.0175"/>
+    </joint>
+
+    <joint name="gripper_joint_right" type="prismatic">
+        <axis xyz="0 1 0"/>
+        <limit lower="0.0" upper="0.04" effort="1000" velocity="0.1"/>
+        <parent link="hand"/>
+        <child link="right_gripper"/>
+        <origin rpy="0 0 0" xyz="0 -0.05 0.0175"/>
+    </joint>
 
 
 
@@ -333,6 +400,27 @@
         </actuator>
     </transmission>
 
+    <!-- Gripper Transmission -->
+    <transmission name="tran7">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="gripper_joint_left">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="motor7">
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <transmission name="tran8">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="gripper_joint_right">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="motor8">
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
 
     <!-- Gazebo -->
     <gazebo reference="base_link">
@@ -367,10 +455,51 @@
         <material>Gazebo/Chrome</material>
     </gazebo>
 
-    <!-- Gazebo plugins -->
+    <!-- Gripper Gazebo -->
+    <gazebo reference="left_gripper">
+        <material>Gazebo/Chrome</material>
+    </gazebo>
+
+    <gazebo reference="right_gripper">
+        <material>Gazebo/Chrome</material>
+    </gazebo>
+
+
+    <!-- Gazebo friction -->
+    <gazebo reference="right_gripper">
+        <mu1>1.0</mu1>
+        <mu2>0.8</mu2>
+    </gazebo>
+
+    <gazebo reference="left_gripper">
+        <mu1>1.0</mu1>
+        <mu2>0.8</mu2>
+    </gazebo>
+
+    <!-- Gazebo ros control -->
     <gazebo>
         <plugin name="control" filename="libgazebo_ros_control.so">
             <robotNamespace></robotNamespace>
+        </plugin>
+    </gazebo>
+
+
+    <!-- Grasp grasp fix -->
+    <gazebo>
+        <plugin name="gazebo_grasp_fix" filename="libgazebo_grasp_fix.so">
+            <arm>
+                <arm_name>arm</arm_name>
+                <palm_link>hand</palm_link>
+                <gripper_link>right_gripper</gripper_link>
+                <gripper_link>left_gripper</gripper_link>
+            </arm>
+            <forces_angle_tolerance>100</forces_angle_tolerance>
+            <update_rate>10</update_rate>
+            <grip_count_threshold>2</grip_count_threshold>
+            <max_grip_count>8</max_grip_count>
+            <release_tolerance>0.005</release_tolerance>
+            <disable_collisions_on_attach>false</disable_collisions_on_attach>
+            <contact_topic>__default_topic__</contact_topic>
         </plugin>
     </gazebo>
 </robot>

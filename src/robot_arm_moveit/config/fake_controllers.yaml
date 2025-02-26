@@ -9,6 +9,13 @@ controller_list:
       - elbow_3
       - elbow_4
       - wrist
+  - name: fake_gripper_controller
+    type: $(arg fake_execution_type)
+    joints:
+      - gripper_joint_left
+      - gripper_joint_right
 initial:  # Define initial robot poses per group
   - group: arm
     pose: home
+  - group: gripper
+    pose: closed
