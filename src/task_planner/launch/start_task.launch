@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
 <launch>
+    <!-- Spawn map-->
     <arg name='start_mobrob' default='true'/>
-    <arg name='start_arm' default='false'/>
+    <arg name='start_arm' default='true'/>
 
-    
+    <!-- Static transform from map to world -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="map_to_world" args="0 0 0 0 0 0 map world"/>
 
     <!-- Gazebo options -->
     <arg name="gazebo_gui" default="true" doc="Start Gazebo GUI"/>
@@ -12,46 +14,26 @@
 
     <!-- Mobile robot -->
     <include file='$(find mobile_robot)/launch/spawn_robot.launch'>
-        <arg name="robot_x" value="-1"/>
-        <arg name="robot_y" value="-1"/>
+        <arg name="robot_x" value="-3"/>
+        <arg name="robot_y" value="-3"/>
     </include>
+    <!-- MoveIt options -->
+    <arg name="pipeline" default="ompl" doc="Planning pipeline to use with MoveIt"/>
 
-    <!-- Robot arm -->
-    <include file='$(find robot_arm_moveit)/launch/demo.launch'>
-        <arg name="moveit_controller_manager" value="ros_control"/>
-        <arg name="load_robot_description" value="true" />
-    </include>
-    
-    <arg name="initial_joint_positions" default=" -J elbow 0 -J elbow_2 0 -J elbow_3 0 -J elbow_4 0 -J hip 0 -J shoulder 0 -J wrist 0" doc="Initial joint configuration of the robot"/>
-    <arg name="world_pose" default="-x 0 -y 0 -z 0 -R 0 -P 0 -Y 0" doc="Pose to spawn the robot arm at"/>
-    
-    <!--<group ns='robot_arm'>-->
-    <rosparam file="$(find robot_arm_moveit)/config/gazebo_controllers.yaml" />
-    <include file="$(find robot_arm_moveit)/launch/ros_controllers.launch"/>
-    <node name="robot_arm_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
-    
-    <!-- Spawn robot arm in Gazebo -->
-    <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model robot_arm $(arg world_pose) $(arg initial_joint_positions)"
-    respawn="false" output="screen" />
-
-    <!-- Spawn the Gazebo ROS controllers -->
-    <node name="gazebo_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="joint_state_controller" />
-    <!--</group>-->
-    
-    <!-- Static transform for robot arm to map-->
-    <node pkg="tf2_ros" type="static_transform_publisher" name="map_to_base" args="0 0 0 0 0 0 map world"/>
-
+    <!-- Spawn Robot Arm-->
+    <include file='$(find robot_arm_moveit)/launch/spawn_robot.launch' pass_all_args="true"/>
     <!-- Spawn a cube for the arm to pick up-->
     <arg name="cube_x" value="-0.3"/>
     <arg name="cube_y" value="0"/>
     <param name="cube" textfile="$(find task_planner)/urdf/cube.urdf"/>
     <node name="spawn_cube" pkg="gazebo_ros" type="spawn_model" args="-urdf -param cube -model cube -x $(arg cube_x) -y $(arg cube_y) -z 0.025" output="screen"/>
-    <node pkg="tf2_ros" type="static_transform_publisher" name="cube_to_map" args="$(arg cube_x) $(arg cube_y) 0 0 0 0 map cube"/>
-
-    <!-- Publish grasp fix states -->
-    <node name="gazebo_grasp_event_publisher" pkg="gazebo_grasp_plugin_ros" type="grasp_event_republisher"/>
 
     <!-- Publish transformations of gazebo objects -->
     <node name="gazebo_object_pose_publisher" pkg="task_planner" type="pose_publisher.py"/>
 
+    <!-- Publish grasp fix states -->
+    <node name="gazebo_grasp_event_publisher" pkg="gazebo_grasp_plugin_ros" type="grasp_event_republisher"/>
+
+    <!-- Spawn the Gazebo ROS controllers -->
+    <node name="gazebo_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="joint_state_controller" />
 </launch>

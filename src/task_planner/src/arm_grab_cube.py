@@ -2,22 +2,38 @@
 import rospy
 import moveit_commander
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
+from gazebo_grasp_plugin_ros.msg import GazeboGraspEvent
 
-rospy.init_node('arm_trajectory_publisher')
+grasped = False
 
-gripper_trajectory_pub = rospy.Publisher('/gripper_controller/command', JointTrajectory, queue_size=10)
-rospy.sleep(1)
+def grasp_callback(msg):
+    global grasped
+    grasped = msg.attached
 
-trajectory_msg = JointTrajectory()
-trajectory_msg.joint_names = ["gripper_joint_left", "gripper_joint_right"]  # Replace with your gripper joint names
 
-point = JointTrajectoryPoint()
-point.positions = [0.05, 0.05]  # gripper open values
-point.effort = [100000.0, 100000.0]  # effort values
-point.time_from_start = rospy.Duration(1.0)
+def arm_grab_cube():
+    global grasped
+    gripper_trajectory_pub = rospy.Publisher('/gripper_controller/command', JointTrajectory, queue_size=10)
+    grasped = False
+    sub = rospy.Subscriber('/gazebo_grasp_event_publisher/grasp_events', GazeboGraspEvent, grasp_callback)
+    rospy.sleep(1)
 
-trajectory_msg.points.append(point)
-gripper_trajectory_pub.publish(trajectory_msg)
+    trajectory_msg = JointTrajectory()
+    trajectory_msg.joint_names = ["gripper_joint_left", "gripper_joint_right"]
 
-# wait for the gripper to open
-rospy.sleep(1)
+    point = JointTrajectoryPoint()
+    point.positions = [0.05, 0.05]  # gripper open values
+    point.effort = [100.0, 100.0]  # effort values
+    point.time_from_start = rospy.Duration(1.0)
+
+    trajectory_msg.points.append(point)
+    gripper_trajectory_pub.publish(trajectory_msg)
+
+    # wait for the gripper to close
+    while not rospy.is_shutdown():
+        if grasped:
+            return
+
+if __name__ == '__main__':
+    rospy.init_node('arm_trajectory_publisher')
+    arm_grab_cube()

@@ -11,7 +11,7 @@ from shape_msgs.msg import SolidPrimitive
 
 
 
-def move_car_to_cube():
+def move_car_to_dropoff():
     pose_array = PoseArray()
 
 
@@ -55,21 +55,10 @@ def move_car_to_cube():
         # [x, y, z,  x, z, y, w]
         # [-4, -4, 0, 0, 0, 0, 1],
     ]
+    dropoff_point = [-4, -4, 0]
+    q = quaternion_from_euler(0, 0, -pi/2)
+    goals.append([dropoff_point[0], dropoff_point[1], dropoff_point[2], q[0], q[1], q[2], q[3]])
 
-    listener = tf.TransformListener()
-    cube_position = None
-
-    while not rospy.is_shutdown() and cube_position is None:
-        try:
-            (trans, rot) = listener.lookupTransform('/map', '/cube', rospy.Time(0))
-            cube_position = trans
-        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-            continue
-
-    if cube_position:
-        q = quaternion_from_euler(0, 0, -pi/2)
-        goals.append([cube_position[0], cube_position[1], 0, q[0], q[1], q[2], q[3]])
-    rospy.logerr(f'move car cube position: {cube_position}')
 
     target_poses = []
     for i, goal in enumerate(goals):
@@ -108,4 +97,4 @@ def move_car_to_cube():
 
 if __name__ == '__main__':
     rospy.init_node('car_path_publisher')
-    move_car_to_cube()
+    move_car_to_dropoff()

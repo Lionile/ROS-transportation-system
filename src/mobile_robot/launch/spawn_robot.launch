@@ -5,9 +5,8 @@
     <arg name="robot_y" default="0" doc="mobile robot start y"/>
     
     <group ns="$(arg ns)">
-        <param name="tf_prefix" value="$(arg ns)" />
-        <!-- Spawn map-->
         <node name= "map_server" pkg="map_server" type="map_server" args="$(find task_planner)/maps/willowgarage_refined.yaml"/>
+        <param name="tf_prefix" value="$(arg ns)" />
         
         <param name="robot_description" command="cat $(find mobile_robot)/urdf/mob_rob.urdf"/>
 
@@ -66,7 +65,7 @@
             <param name="recovery_alpha_slow" value="0.0"/>
             <param name="recovery_alpha_fast" value="0.0"/>
             
-            <param name='use_map_topic' value='true'/>
+            <remap from="map" to="/map"/>
             <param name='base_frame_id' value='$(arg ns)/base_link'/>
         </node>
 

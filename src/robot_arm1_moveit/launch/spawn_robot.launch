@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="initial_joint_positions" default=" -J elbow 0 -J elbow_2 0 -J elbow_3 0 -J elbow_4 0 -J hip 0 -J shoulder 0 -J wrist 0" doc="Initial joint configuration of the robot"/>
+    <arg name="world_pose" default="-x -1 -y 0 -z 0 -R 0 -P 0 -Y 0" doc="Pose to spawn the robot arm at"/>
+    <param name="tf_prefix" value="robot_arm1"/>
+    
+    <include file='$(find robot_arm1_moveit)/launch/demo.launch'>
+        <arg name="moveit_controller_manager" value="ros_control"/>
+        <arg name="load_robot_description" value="true" />
+    </include>
+    
+    <rosparam file="$(find robot_arm1_moveit)/config/gazebo_controllers.yaml" />
+    <include file="$(find robot_arm1_moveit)/launch/ros_controllers.launch"/>
+    <node name="robot_arm1_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+    
+    <!-- Spawn robot arm in Gazebo -->
+    <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model robot_arm1 $(arg world_pose) $(arg initial_joint_positions)"
+    respawn="false" output="screen" />
+
+    <!-- Static transform for robot arm to map-->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="map_to_base" args="-1 0 0 0 0 0 world robot_arm1/world"/>
+</launch>

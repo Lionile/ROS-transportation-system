@@ -17,13 +17,11 @@ def spawn_model(model_name, model_xml, model_pose):
     rospy.wait_for_service('/gazebo/spawn_urdf_model')
     try:
         spawn_model_service = rospy.ServiceProxy('/gazebo/spawn_urdf_model', SpawnModel)
-        spawn_model_service(model_name, model_xml, "", model_pose, "world")
+        spawn_model_service(model_name, model_xml, "", model_pose, "map")
     except rospy.ServiceException as e:
         rospy.logerr(f"Spawn Model service call failed: {e}")
 
-if __name__ == '__main__':
-    rospy.init_node('cube_respawn')
-
+def respawn_cube():
     model_name = 'cube'
     package_path = rospkg.RosPack().get_path('task_planner')
     model_path = f'{package_path}/urdf/cube.urdf'
@@ -38,3 +36,8 @@ if __name__ == '__main__':
     delete_model(model_name)
     time.sleep(1)
     spawn_model(model_name, model_xml, model_pose)
+
+if __name__ == '__main__':
+    rospy.init_node('cube_respawn')
+
+    respawn_cube()

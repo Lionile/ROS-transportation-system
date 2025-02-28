@@ -271,19 +271,6 @@
                 <box size="0.02 0.02 0.07"/>
             </geometry>
             <origin rpy="0 0 0" xyz="0 0 0.035"/>
-            <surface>
-                <friction>
-                    <ode>
-                        <mu>100000.0</mu>
-                        <mu2>100000.0</mu2>
-                    </ode>
-                </friction>
-                <contact>
-                    <ode>
-                        <min_depth>0.003</min_depth>
-                    </ode>
-                </contact>
-            </surface>
         </collision>
         <inertial>
             <mass value="0.1"/>
@@ -307,19 +294,6 @@
                 <box size="0.02 0.02 0.07"/>
             </geometry>
             <origin rpy="0 0 0" xyz="0 0 0.035"/>
-            <surface>
-                <friction>
-                    <ode>
-                        <mu>100000.0</mu>
-                        <mu2>100000.0</mu2>
-                    </ode>
-                </friction>
-                <contact>
-                    <ode>
-                        <min_depth>0.003</min_depth>
-                    </ode>
-                </contact>
-            </surface>
         </collision>
         <inertial>
             <mass value="0.1"/>
@@ -514,7 +488,7 @@
     <gazebo>
         <plugin name="gazebo_grasp_fix" filename="libgazebo_grasp_fix.so">
             <arm>
-                <arm_name>arm</arm_name>
+                <arm_name>arm1</arm_name>
                 <palm_link>hand</palm_link>
                 <gripper_link>right_gripper</gripper_link>
                 <gripper_link>left_gripper</gripper_link>
